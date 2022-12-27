@@ -17,7 +17,7 @@ for information on when it cannot replace fs.WalkDir.
 Use Go modules to install the package.
 
 ```bash
-go install go.abhg.dev/fsrun@latest
+go get go.abhg.dev/fsrun@latest
 ```
 
 ## Usage
