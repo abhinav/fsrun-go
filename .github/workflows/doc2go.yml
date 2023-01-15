@@ -39,7 +39,7 @@ jobs:
       - name: Install doc2go
         run: go install go.abhg.dev/doc2go@latest
       - name: Generate API reference
-        run: doc2go ./...
+        run: doc2go -home go.abhg.dev/fsrun ./...
       - name: Upload pages
         uses: actions/upload-pages-artifact@v1
 
