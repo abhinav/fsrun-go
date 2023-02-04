@@ -2,6 +2,7 @@ export GOBIN ?= $(shell pwd)/bin
 export PATH := $(GOBIN):$(PATH)
 
 STATICCHECK = bin/staticcheck
+REVIVE = bin/revive
 GO_FILES = $(shell find . \
 	   -path '*/.*' -prune -o \
 	   '(' -type f -a -name '*.go' ')' -print)
@@ -10,7 +11,7 @@ GO_FILES = $(shell find . \
 all: lint test
 
 .PHONY: lint
-lint: gofmt staticcheck
+lint: gofmt staticcheck revive
 
 .PHONY: gofmt
 gofmt:
@@ -24,6 +25,10 @@ gofmt:
 staticcheck: $(STATICCHECK)
 	staticcheck ./...
 
+.PHONY: revive
+revive: $(REVIVE)
+	revive -set_exit_status ./...
+
 .PHONY: test
 test:
 	go test -v -race ./...
@@ -35,3 +40,6 @@ cover:
 
 $(STATICCHECK): tools/go.mod
 	cd tools && go install honnef.co/go/tools/cmd/staticcheck
+
+$(REVIVE): tools/go.mod
+	cd tools && go install github.com/mgechev/revive
