@@ -302,7 +302,7 @@ type walkRecorder struct {
 	Paths []string
 }
 
-func (r *walkRecorder) Visit(path string, ent fs.DirEntry, err error) error {
+func (r *walkRecorder) Visit(path string, _ fs.DirEntry, err error) error {
 	r.mu.Lock()
 	r.Paths = append(r.Paths, path)
 	r.mu.Unlock()
