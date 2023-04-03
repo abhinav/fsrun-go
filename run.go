@@ -2,12 +2,13 @@
 package fsrun
 
 import (
-	"container/list"
 	"errors"
 	"io/fs"
 	"path/filepath"
 	"runtime"
 	"sync"
+
+	"go.abhg.dev/container/ring"
 )
 
 // SkipDir indicates that the children of a directory should be skipped
@@ -186,9 +187,7 @@ func (w *runner) Main(rootPath string, rootEntry fs.DirEntry) error {
 		outstanding int
 
 		// Requests that remain to be sent to workers.
-		queue = list.New() // list[*workerRequest]
-		// list stores pointers to avoid allocations
-		// from struct to iface conversions.
+		queue ring.Q[workerRequest]
 	)
 
 	// Workers are already running by this point so we can start.
@@ -207,19 +206,17 @@ func (w *runner) Main(rootPath string, rootEntry fs.DirEntry) error {
 			// if reqc is nil.
 			reqc  chan workerRequest
 			value workerRequest
-			node  *list.Element
 		)
-		if queue.Len() > 0 {
+		if !queue.Empty() {
 			reqc = w.reqc
-			node = queue.Front()
-			value = *node.Value.(*workerRequest)
+			value = queue.Peek()
 		}
 
 		select {
 		case reqc <- value:
 			// Remove from the queue only if we successfully handed
 			// this off to a worker.
-			queue.Remove(node)
+			queue.Pop()
 
 		case r := <-w.resc:
 			outstanding--
@@ -237,7 +234,7 @@ func (w *runner) Main(rootPath string, rootEntry fs.DirEntry) error {
 						Path:  filepath.Join(r.Path, c.Name()),
 						Entry: c,
 					}
-					queue.PushBack(&children[i])
+					queue.Push(children[i])
 				}
 				outstanding += len(r.Children)
 			}
