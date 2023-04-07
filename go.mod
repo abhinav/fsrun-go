@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/stretchr/testify v1.8.2
-	go.abhg.dev/container/ring v0.1.0
+	go.abhg.dev/container/ring v0.2.0
 	go.uber.org/atomic v1.10.0
 	go.uber.org/goleak v1.2.0
 )
