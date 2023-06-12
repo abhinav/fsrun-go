@@ -17,32 +17,46 @@ import (
 )
 
 func TestIgnoreSkipDir(t *testing.T) {
+	t.Parallel()
+
 	t.Run("SkipDir", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, ignoreSkipDir(SkipDir))
 	})
 
 	t.Run("fs.SkipDir", func(t *testing.T) {
+		t.Parallel()
+
 		assert.NoError(t, ignoreSkipDir(fs.SkipDir))
 	})
 
 	t.Run("wrapped SkipDir", func(t *testing.T) {
+		t.Parallel()
+
 		err := fmt.Errorf("great sadness: %w", SkipDir)
 		assert.NoError(t, ignoreSkipDir(err))
 	})
 
 	t.Run("other", func(t *testing.T) {
+		t.Parallel()
+
 		err := errors.New("great sadness")
 		assert.ErrorIs(t, ignoreSkipDir(err), err)
 	})
 }
 
 func TestWalkDir(t *testing.T) {
+	t.Parallel()
+
 	fsys := fstest.MapFS{
 		"a/b/c.txt":           {},
 		"foo/bar/baz/qux.txt": {},
 	}
 
 	t.Run("simple", func(t *testing.T) {
+		t.Parallel()
+
 		var rec walkRecorder
 		err := WalkDir(fsys, ".", rec.Visit)
 		require.NoError(t, err)
@@ -54,6 +68,8 @@ func TestWalkDir(t *testing.T) {
 	})
 
 	t.Run("SkipDir", func(t *testing.T) {
+		t.Parallel()
+
 		var rec walkRecorder
 		err := WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 			if path == "a" {
@@ -70,6 +86,8 @@ func TestWalkDir(t *testing.T) {
 }
 
 func TestVisit_file(t *testing.T) {
+	t.Parallel()
+
 	fsys := fstest.MapFS{"a/b/c.txt": {}}
 	var (
 		rec walkRecorder
@@ -80,6 +98,8 @@ func TestVisit_file(t *testing.T) {
 }
 
 func TestVisit_fileError(t *testing.T) {
+	t.Parallel()
+
 	giveErr := errors.New("great sadness")
 	fsys := patchedFS{
 		FS: fstest.MapFS{"a/b/c.txt": {}},
@@ -98,6 +118,8 @@ func TestVisit_fileError(t *testing.T) {
 }
 
 func TestVisit_error(t *testing.T) {
+	t.Parallel()
+
 	fsys := fstest.MapFS{
 		"a/b/c.txt": {},
 		"a/b/d.txt": {},
@@ -126,6 +148,8 @@ func TestVisit_error(t *testing.T) {
 }
 
 func TestVisit_skipDir(t *testing.T) {
+	t.Parallel()
+
 	fsys := fstest.MapFS{
 		"a/b/c.txt": {},
 		"a/b/d.txt": {},
@@ -149,6 +173,8 @@ func TestVisit_skipDir(t *testing.T) {
 }
 
 func TestVisit_readDirError(t *testing.T) {
+	t.Parallel()
+
 	giveErr := errors.New("great sadness")
 
 	innerFS := fstest.MapFS{
@@ -190,6 +216,8 @@ func TestVisit_readDirError(t *testing.T) {
 }
 
 func TestVisit_concurrency(t *testing.T) {
+	t.Parallel()
+
 	const (
 		N     = 8
 		Count = 100
@@ -238,6 +266,8 @@ func TestVisit_concurrency(t *testing.T) {
 }
 
 func TestVisit_bigDirFS(t *testing.T) {
+	t.Parallel()
+
 	// This test generates a large file tree
 	// inside a temporary directory
 	// and traverses that with fsrun.
