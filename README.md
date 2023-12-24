@@ -90,5 +90,5 @@ Returning SkipDir for files has no effect.
 
 ## License
 
-This software is available under the MIT License.
+This software is available under the BSD3 License.
 See LICENSE for more details.
